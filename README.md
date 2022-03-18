@@ -11,14 +11,13 @@ Quick links
 </ul>
 
 <br /> 
-<br />
-<i>Message: Temporary stop: For a few days, the project will stop working as I will upload further files in a few days. </i>
-
 
 TypeSoundnessCertifier comprises two components:
 <ul>
 <li> Lang-n-Check: Takes in input a language definition and type checks it to see whether it is type sound. 
-<li> Lang-n-Prove: Takes in input a language definition that has been type checked by Lang-n-Check, and generates a machine checked proof of type soundness in the Abella proof assistant. 
+<li> A proof generator: Takes in input a language definition that has been type checked by Lang-n-Check, and generates a machine checked proof of type soundness in the Abella proof assistant. 
+	<br /> The proof generator is based on manual algorithms that later have been declaratively expressed in another tool called <a href="https://github.com/mcimini/lang-n-prove">Lang-n-Prove</a>. 
+	<br /> In the future, we plan to replace the proof generator, and directly integrate Lang-n-Prove. 
 </ul>
 
 

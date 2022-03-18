@@ -45,7 +45,7 @@ intros  Main PrgsE1 PrgsE2. TypeOfE1 : case Main. ProgressClause : case PrgsE1. 
 
 Theorem progress_tuple5 : forall E1 E2 E3 E4 E5 T, {typeOf ((tuple5 E1 E2 E3 E4 E5)) T} -> progresses E1 -> progresses E2 -> progresses E3 -> progresses E4 -> progresses E5 -> progresses ((tuple5 E1 E2 E3 E4 E5)).
 
-intros  Main PrgsE1 PrgsE2 PrgsE3 PrgsE4 PrgsE5. TypeOfE1 : case Main. case PrgsE5. case PrgsE4. case PrgsE3. case PrgsE2. ProgressClause : case PrgsE1.
+intros  Main PrgsE1 PrgsE2 PrgsE3 PrgsE4 PrgsE5. TypeOfE1 : case Main. ProgressClause : case PrgsE1. case PrgsE2. case PrgsE3. case PrgsE4. case PrgsE5.
  search. search. search. search. search. search.
 
 

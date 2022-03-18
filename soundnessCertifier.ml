@@ -43,17 +43,15 @@ let generateThm tsName ldl subtyping = generateThmPreamble tsName
 let displayPreservationMessage str = 
 	let (operator,nested) = (String.split str "_") in 
 	if nested = "" then "Reduction rule for " ^ operator ^ "is not type preserving"
-	else "Reduction rule of " ^ operator ^ " for handling a value " ^ nested ^ " is not type preserving"
+	else "Reduction rule of " ^ operator ^ " for handling a value " ^ nested ^ "is not type preserving"
 							
 let checkResult tlName output = 
-	(* let lastline = List.hd output in (* remember that output is in reverse *)  it seems that the error output is: test_r_snd_pair < search.\n Error: Search failed *) 
-	(* So we grab the last TWO lines rather than the last time. *) 
-	let lastTWOline = List.hd output ^ " \n " ^ List.hd (List.tl output) in  
-	if (String.exists lastTWOline "< search." || String.exists lastTWOline "failed" || String.exists lastTWOline "Error") 
+	let lastline = List.hd output in (* remember that output is in reverse *)
+	if (String.exists lastline "< search.") 
 		(* if Abella 2.0.2, 2.0.3, and 2.0.4 fail our type preservation check, they quit abruptly after "search.", which is then the last line *)
 		(* this check above will be replaced with a better way to interact with Abella *)
 		(* then raise(Failure("FAILED Type Preservation. Specification: " ^ tlName ^ ". Rule: " ^ String.tail (fst (String.split lastline "<")) (String.length "test_r_") ^ "\n")) *)
-		then raise(Failure("FAILED Type Preservation. Specification: " ^ tlName ^ ": " ^ displayPreservationMessage (fst  (String.split (snd (String.split lastTWOline "test_r_")) " <")))) 
+		then raise(Failure("FAILED Type Preservation. Specification: " ^ tlName ^ ": " ^ displayPreservationMessage (String.tail (fst (String.split lastline "<")) (String.length "test_r_"))))
 		else ()
 
 
@@ -87,12 +85,12 @@ let runPreservationTests tlName ldl subtyping =
 			chdir "generated"; 
 			(* let output = callAbella (timeout ^ "abella " ^ testingQueriesFile) in *)
 		    ignore (Unix.alarm 3);
-		    Sys.set_signal Sys.sigalrm (Sys.Signal_handle (fun _ -> raise(Failure("Timeout")))); 
+		    Sys.set_signal Sys.sigalrm (Sys.Signal_handle (fun _ -> raise(Failure("Timeout"))));
 			let output = ref [] in 
  		   	begin try output := callAbella (timeout ^ "abella " ^ testingQueriesFile) with _ -> () end;
             chdir directory; 
 			checkResult tlName !output;
-			Sys.remove ("./generated/" ^ testingQueriesFile) ;; 
+			Sys.remove ("./generated/" ^ testingQueriesFile);;
 
 
 let tlTable = 

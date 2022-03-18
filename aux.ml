@@ -50,14 +50,18 @@ let removeDuplicates(list') =
                  else [head]@removeDuplicatesHelper(List.rev(tail))
   in List.rev(removeDuplicatesHelper(list'));;
 
-let rec topo_aux wholegraph path visited currentnode = 
-	if List.mem currentnode path 
-		then raise Contexts_are_cyclic (* Found a cycle *)
-		else try let eds = List.assoc currentnode wholegraph in (currentnode :: (List.fold_left (topo_aux wholegraph (currentnode :: path)) visited eds)) with Not_found -> visited
-and dfs wholegraph visited node = topo_aux wholegraph [] visited node
-and topo_compute_order graph = 
-	let callaux visited pair = dfs graph visited (fst pair) in  
-		removeDuplicates (List.rev (List.fold_left callaux [] graph))
+
+
+let dfs wholegraph visited node = 
+	let check_it_is_key currentnode wholegraph = List.mem_assoc currentnode wholegraph in 
+	let rec dfs_aux wholegraph path visited currentnode = 
+		if List.mem currentnode path 
+			then raise Contexts_are_cyclic 
+			else  
+				if check_it_is_key currentnode wholegraph then (currentnode :: (List.fold_left (dfs_aux wholegraph (currentnode :: path)) visited (List.assoc currentnode wholegraph))) else visited
+		in dfs_aux wholegraph [] visited node
+
+let topo_compute_order graph = List.rev (removeDuplicates (List.fold_left (fun visited nn -> dfs graph visited nn) [] (List.map fst graph)))
  
 let addAnd str = " /\\ " ^ str
 

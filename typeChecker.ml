@@ -31,21 +31,13 @@ type roleRed =
 
 let rule_wellFormed2_ tl rule = 
 	let op = ckIf (term_isConstructor (rule_getInputTerm rule)) (term_getConstructor (rule_getInputTerm rule)) ("rule not a valid typing rule: it does not type an operator") in 
-	let termDecl = try (tl_lookupTermDecl tl op) with _ -> raise(Failure("Operator " ^ op ^ " is not defined in the Expression grammar")) in 
-	 rule_wellFormed2 termDecl rule
+	 rule_wellFormed2 (tl_lookupTermDecl tl op) rule
 	 
 let progressingArguments_are_contextual tl rule = 
 	let op = rule_getConstructorOfInput rule in 
 	let n = snd (positionsCheckedForValuehood rule) in 
-	let termDecl = try (tl_lookupTermDecl tl op) with _ -> raise(Failure("Operator " ^ op ^ " is not defined in the Expression grammar")) in 
-	let ctx = term_getContextualPositions termDecl in 
-	let notContextual = (list_difference n ctx) in 
-	let firstNotContextual = if notContextual = [] then "" else (match List.hd notContextual with 
-			| 1 -> "1st"
-			| 2 -> "2nd"
-			| 3 -> "3rd"
-			| n -> string_of_int (n-1) ^ "th") in 
-	ckIf (list_subset n ctx) ctx ("Operator " ^ op ^ ": " ^ firstNotContextual ^ " argument is not declared as evaluation context, hence some programs may get stuck")
+	let ctx = term_getContextualPositions (tl_lookupTermDecl tl op) in 
+		ckIf (list_subset n ctx) ctx ("Operator " ^ op ^ " has arguments tested for valuehood that are not contextual")
 
 let typecheckVal tl rule = 
 	if rule_wellFormed1 rule 
@@ -118,7 +110,7 @@ let typecheckTyp tl reductionrules bindingsDef rule =
 								  then (tryErrorHandler op reductionsForOp) 
 						  		  else ckIf ((List.for_all (bindingDef_isValue bindingsDef) (List.map rule_checkEliminatesWhat reductionsForOp)) && extraCheckForLists tl rule)
 								  			(op, Elim (extractTypeOfEliminatingArgument rule)) 
-								  			("The reduction rules of " ^ op ^ " are not defined with values at the principal argument, or you may have forgotten to declare all the values in the Value grammar") 
+								  			("Failed in Classifying operator " ^ op) 
 		else raise(Failure "typecheckTyp") (* here rule_wellFormed2 has already raised its error *) 				
 						 		
 								
